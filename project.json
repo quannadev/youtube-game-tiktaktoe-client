@@ -1,0 +1,8 @@
+{
+  "engine": "cocos-creator-js",
+  "packages": "packages",
+  "name": "Youtube-gameClient",
+  "id": "009cc10c-3a38-4946-804c-be38bda106fa",
+  "version": "2.4.6",
+  "isNew": false
+}
