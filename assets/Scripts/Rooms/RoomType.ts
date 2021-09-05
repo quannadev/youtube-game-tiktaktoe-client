@@ -6,6 +6,7 @@ export enum RoomType {
 }
 
 export interface RoomInfo {
+    RoomId: string;
     RoomType: RoomType;
     Players: IUser[];
 }

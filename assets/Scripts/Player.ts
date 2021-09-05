@@ -1,5 +1,6 @@
 import {IUser} from "./UserProfile";
 import {RoomInfo, RoomType} from "./Rooms/RoomType";
+import Lobby from "./Lobby";
 
 const {ccclass, property} = cc._decorator;
 
@@ -11,7 +12,9 @@ export enum WsTags {
     RoomInfo,
     LobbyInfo,
     CreateRoom,
-    QuickPlay
+    QuickPlay,
+    ListRooms,
+    JoinRoom
 }
 
 export interface WsMessage {
@@ -43,6 +46,8 @@ export default class Player extends cc.Component {
     public userInfo: IUser = null;
 
     private client: WebSocket = null
+    public roomData: RoomInfo = null;
+    public lobbyData: RoomInfo = null;
 
     onLoad() {
         this.client = new WebSocket(this.wsServer)
@@ -68,13 +73,20 @@ export default class Player extends cc.Component {
                 const roomData = message.Data as RoomInfo;
                 switch (roomData.RoomType ) {
                     case RoomType.Lobby:
+                        this.lobbyData = roomData
                         this.changeLayout(GameLayout.Lobby);
                         break
                     case RoomType.Battle:
+                        this.roomData = roomData
                         this.changeLayout(GameLayout.Match);
                         break
                 }
                 break
+            case WsTags.ListRooms:
+                const lobby = this.layoutContent.children[0].getComponent(Lobby)
+                if (lobby){
+                    lobby.SetListMatch(message.Data as RoomInfo[])
+                }
         }
     }
     private changeLayout(data: GameLayout){
@@ -100,6 +112,17 @@ export default class Player extends cc.Component {
         const loginMessage: WsMessage = {
             Tags: WsTags.CreateRoom,
             Data: createData
+        }
+        this.sendMessage(loginMessage);
+    }
+    JoinRoom(id: string, password: string){
+        const joinData = {
+            "RoomId": id,
+            "Password": password
+        }
+        const loginMessage: WsMessage = {
+            Tags: WsTags.JoinRoom,
+            Data: joinData
         }
         this.sendMessage(loginMessage);
     }
