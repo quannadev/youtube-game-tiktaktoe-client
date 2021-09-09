@@ -131,7 +131,7 @@ export default class Player extends cc.Component {
 
     CreateRoom() {
         const createData = {
-            "Time": 5,
+            "Time": 15,
         }
         const loginMessage: WsMessage = {
             Tags: WsTags.CreateRoom,

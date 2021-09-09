@@ -93,7 +93,16 @@ export default class Match extends cc.Component {
         this.boardOverLay.active = false;
     }
     onTurn(data: ITurn){
-        this.turnId.string = `Lượt: ${data.Turn}`
+        this.turnId.string = `Lượt: ${data.Turn}`;
+        const myProfile = this.meNode.children[0];
+        const targetProfile = this.targetNode.children[0];
+        if (data.PlayerId == Player.Instance.userInfo.Id){
+            myProfile.getComponent(UserProfile).StartTimer(data.TimerCount)
+            targetProfile.getComponent(UserProfile).StopTimer()
+        }else {
+            targetProfile.getComponent(UserProfile).StartTimer(data.TimerCount)
+            myProfile.getComponent(UserProfile).StopTimer()
+        }
     }
     // update (dt) {}
 }
