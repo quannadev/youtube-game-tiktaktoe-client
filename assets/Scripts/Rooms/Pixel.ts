@@ -5,7 +5,7 @@ const {ccclass, property} = cc._decorator;
 export enum PixelType {
     None,
     X,
-    Y
+    O
 }
 
 Enum(PixelType)
@@ -45,8 +45,8 @@ export default class Pixel extends cc.Component {
             case PixelType.X:
                 this.pixelName.string = "X";
                 break
-            case PixelType.Y:
-                this.pixelName.string = "Y";
+            case PixelType.O:
+                this.pixelName.string = "O";
         }
     }
 

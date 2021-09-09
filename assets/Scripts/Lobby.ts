@@ -19,6 +19,7 @@ export default class Lobby extends cc.Component {
     }
 
     start() {
+        console.log('Lobby loaded')
         this.userProfile.SetData(Player.Instance.userInfo)
     }
 

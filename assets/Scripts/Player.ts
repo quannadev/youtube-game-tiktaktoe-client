@@ -1,6 +1,8 @@
 import {IUser} from "./UserProfile";
 import {RoomInfo, RoomType} from "./Rooms/RoomType";
 import Lobby from "./Lobby";
+import {PixelType} from "./Rooms/Pixel";
+import Match from "./Rooms/Match";
 
 const {ccclass, property} = cc._decorator;
 
@@ -14,13 +16,19 @@ export enum WsTags {
     CreateRoom,
     QuickPlay,
     ListRooms,
-    JoinRoom
+    JoinRoom,
+    ExitRoom,
+    StartGame,
+    SetBlock,
+    Turn,
+    GameInfo,
 }
 
 export interface WsMessage {
     Tags: WsTags;
     Data: any;
 }
+
 export enum GameLayout {
     Login = 'login',
     Lobby = 'lobby',
@@ -48,6 +56,8 @@ export default class Player extends cc.Component {
     private client: WebSocket = null
     public roomData: RoomInfo = null;
     public lobbyData: RoomInfo = null;
+    public pixelType: PixelType = PixelType.None
+    private matchHandler: Match = null;
 
     onLoad() {
         this.client = new WebSocket(this.wsServer)
@@ -63,15 +73,19 @@ export default class Player extends cc.Component {
         Player.Instance = this;
         this.changeLayout(GameLayout.Login);
     }
+
     private onMessage(msg: string) {
         const message = JSON.parse(msg) as WsMessage;
         switch (message.Tags) {
+            case WsTags.Invalid:
+                alert(message.Data)
+                break
             case WsTags.UserInfo:
                 this.userInfo = message.Data as IUser
                 break;
             case WsTags.RoomInfo:
                 const roomData = message.Data as RoomInfo;
-                switch (roomData.RoomType ) {
+                switch (roomData.RoomType) {
                     case RoomType.Lobby:
                         this.lobbyData = roomData
                         this.changeLayout(GameLayout.Lobby);
@@ -84,12 +98,20 @@ export default class Player extends cc.Component {
                 break
             case WsTags.ListRooms:
                 const lobby = this.layoutContent.children[0].getComponent(Lobby)
-                if (lobby){
+                if (lobby) {
                     lobby.SetListMatch(message.Data as RoomInfo[])
                 }
+                break
+            case WsTags.Turn:
+                this.matchHandler.onTurn(message.Data);
+                break
+            case WsTags.GameInfo:
+                this.matchHandler?.onGameStart(message.Data)
+                break
         }
     }
-    private changeLayout(data: GameLayout){
+
+    private changeLayout(data: GameLayout) {
         let targetNode = null;
         this.layoutContent.removeAllChildren()
         switch (data) {
@@ -101,11 +123,13 @@ export default class Player extends cc.Component {
                 break
             case GameLayout.Match:
                 targetNode = cc.instantiate(this.matchLayout)
+                this.matchHandler = targetNode.getComponent(Match);
                 break
         }
         this.layoutContent.addChild(targetNode)
     }
-    CreateRoom(){
+
+    CreateRoom() {
         const createData = {
             "Time": 5,
         }
@@ -115,7 +139,8 @@ export default class Player extends cc.Component {
         }
         this.sendMessage(loginMessage);
     }
-    JoinRoom(id: string, password: string){
+
+    JoinRoom(id: string, password: string) {
         const joinData = {
             "RoomId": id,
             "Password": password
@@ -160,6 +185,22 @@ export default class Player extends cc.Component {
         const loginMessage: WsMessage = {
             Tags: WsTags.Register,
             Data: loginData
+        }
+        this.sendMessage(loginMessage);
+    }
+
+    ExitMatch() {
+        const loginMessage: WsMessage = {
+            Tags: WsTags.ExitRoom,
+            Data: {}
+        }
+        this.sendMessage(loginMessage);
+    }
+
+    StartGame() {
+        const loginMessage: WsMessage = {
+            Tags: WsTags.StartGame,
+            Data: {}
         }
         this.sendMessage(loginMessage);
     }

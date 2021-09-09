@@ -1,3 +1,5 @@
+import {PixelType} from "./Rooms/Pixel";
+
 const {ccclass, property} = cc._decorator;
 
 export interface IUser {
@@ -6,6 +8,7 @@ export interface IUser {
     Avatar?: string;
     Level: number;
     Amount: number;
+    PixelType: PixelType;
 }
 
 @ccclass

@@ -1,6 +1,7 @@
 import Pixel from "./Pixel";
 import UserProfile, {IUser} from "../UserProfile";
 import Player from "../Player";
+import {GameInfoData, ITurn, MatchStatus} from "./GameInfoData";
 
 const {ccclass, property} = cc._decorator;
 
@@ -19,10 +20,17 @@ export default class Match extends cc.Component {
     targetNode: cc.Node = null
     @property(cc.Label)
     roomId: cc.Label = null
+    @property(cc.Label)
+    turnId: cc.Label = null
+    @property(cc.Node)
+    boardOverLay: cc.Node = null
 
     private boardSize = cc.v2(10, 10);
     private matchId: string = ""
-
+    private OwnerId: string = ""
+    private targetInfo: IUser = null;
+    private matchStatus: MatchStatus = MatchStatus.Init
+    private timeCount: number = 0;
     onLoad() {
         this.initBoard()
     }
@@ -48,12 +56,14 @@ export default class Match extends cc.Component {
         profile.setContentSize(120, 120)
         const isMe = userInfo.Id == Player.Instance.userInfo.Id;
         if (isMe) {
+            Player.Instance.pixelType = userInfo.PixelType;
             this.meNode.removeAllChildren();
             this.meNode.addChild(profile);
             return
         }
         this.targetNode.removeAllChildren();
         this.targetNode.addChild(profile);
+        this.targetInfo = userInfo;
     }
 
     private InitMatchInfo() {
@@ -63,7 +73,27 @@ export default class Match extends cc.Component {
         })
         this.matchId = Player.Instance.roomData.RoomId;
         this.roomId.string = `ID: ${this.matchId}`;
+        this.OwnerId = Player.Instance.roomData.OwnerId
     }
 
+    onUserExitMatch() {
+        Player.Instance.ExitMatch();
+    }
+
+    onUserStartGame() {
+        if (Player.Instance.userInfo.Id != this.OwnerId) {
+            console.log("Không phải chủ phòng")
+            return
+        }
+        Player.Instance.StartGame()
+    }
+    onGameStart(data: GameInfoData){
+        this.matchStatus = data.MatchStatus
+        this.timeCount = data.TimeCount
+        this.boardOverLay.active = false;
+    }
+    onTurn(data: ITurn){
+        this.turnId.string = `Lượt: ${data.Turn}`
+    }
     // update (dt) {}
 }
