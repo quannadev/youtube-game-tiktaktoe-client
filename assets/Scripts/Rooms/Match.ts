@@ -1,7 +1,8 @@
-import Pixel from "./Pixel";
+import Pixel, {PixelType} from "./Pixel";
 import UserProfile, {IUser} from "../UserProfile";
 import Player from "../Player";
 import {GameInfoData, ITurn, MatchStatus} from "./GameInfoData";
+import {PlaceData} from "./RoomType";
 
 const {ccclass, property} = cc._decorator;
 
@@ -31,6 +32,8 @@ export default class Match extends cc.Component {
     private targetInfo: IUser = null;
     private matchStatus: MatchStatus = MatchStatus.Init
     private timeCount: number = 0;
+    private board: PixelType[][] = []
+
     onLoad() {
         this.initBoard()
     }
@@ -41,12 +44,16 @@ export default class Match extends cc.Component {
 
     private initBoard() {
         this.boardGrid.removeAllChildren();
+        this.board = Array.of();
         for (let row = 0; row < this.boardSize.x; row++) {
+            const colBoard = Array.of<PixelType>();
             for (let col = 0; col < this.boardSize.y; col++) {
                 const pixel = cc.instantiate(this.pixelNode);
                 pixel.getComponent(Pixel).setData(row, col)
                 this.boardGrid.addChild(pixel);
+                colBoard.push(PixelType.None)
             }
+            this.board.push(colBoard)
         }
     }
 
@@ -87,22 +94,34 @@ export default class Match extends cc.Component {
         }
         Player.Instance.StartGame()
     }
-    onGameStart(data: GameInfoData){
+
+    onGameStart(data: GameInfoData) {
         this.matchStatus = data.MatchStatus
         this.timeCount = data.TimeCount
         this.boardOverLay.active = false;
     }
-    onTurn(data: ITurn){
+
+    onTurn(data: ITurn) {
         this.turnId.string = `Lượt: ${data.Turn}`;
         const myProfile = this.meNode.children[0];
         const targetProfile = this.targetNode.children[0];
-        if (data.PlayerId == Player.Instance.userInfo.Id){
+        if (data.PlayerId == Player.Instance.userInfo.Id) {
             myProfile.getComponent(UserProfile).StartTimer(data.TimerCount)
             targetProfile.getComponent(UserProfile).StopTimer()
-        }else {
+        } else {
             targetProfile.getComponent(UserProfile).StartTimer(data.TimerCount)
             myProfile.getComponent(UserProfile).StopTimer()
         }
     }
+
     // update (dt) {}
+    SetPlace(data: PlaceData) {
+        for (let p = 0; p < this.boardGrid.children.length; p++) {
+            const tempNode = this.boardGrid.children[p].getComponent(Pixel);
+            if (tempNode.row == data.Row && tempNode.col == data.Col) {
+                tempNode.setData(tempNode.row, tempNode.col, data.PixelType);
+                break
+            }
+        }
+    }
 }

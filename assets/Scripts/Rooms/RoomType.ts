@@ -1,4 +1,5 @@
 import {IUser} from "../UserProfile";
+import {PixelType} from "./Pixel";
 
 export enum RoomType {
     Lobby,
@@ -10,4 +11,9 @@ export interface RoomInfo {
     RoomId: string;
     RoomType: RoomType;
     Players: IUser[];
+}
+export interface PlaceData {
+    Row: number;
+    Col: number;
+    PixelType: PixelType
 }

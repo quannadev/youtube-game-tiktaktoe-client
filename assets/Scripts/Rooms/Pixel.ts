@@ -1,4 +1,5 @@
 import Enum = cc.Enum;
+import Player from "../Player";
 
 const {ccclass, property} = cc._decorator;
 
@@ -20,34 +21,42 @@ export default class Pixel extends cc.Component {
         type: PixelType
     })
     pixelType: PixelType = PixelType.None
-    private row: number;
-    private col: number;
+    public row: number;
+    public col: number;
 
     onLoad() {
         this.node.on(cc.Node.EventType.TOUCH_END, () => {
             cc.tween(this.node)
                 .blink(0.5, 2)
                 .call(_ => {
-                this.onUserClick(PixelType.X)
-            }).start();
+                    this.onUserClick(PixelType.X)
+                }).start();
         })
     }
-    setData(row: number, col: number){
+
+    setData(row: number, col: number, pixel: PixelType = PixelType.None) {
         this.row = row;
         this.col = col;
+        this.pixelType = pixel
+        if (pixel != PixelType.None){
+            switch (pixel) {
+                case PixelType.X:
+                    this.pixelName.string = "X";
+                    this.pixelName.node.color = cc.Color.RED
+                    break
+                case PixelType.O:
+                    this.pixelName.string = "O";
+                    this.pixelName.node.color = cc.Color.BLUE
+                    break
+            }
+        }
     }
 
     onUserClick(type: PixelType) {
         if (this.pixelType != PixelType.None) {
             return
         }
-        switch (type) {
-            case PixelType.X:
-                this.pixelName.string = "X";
-                break
-            case PixelType.O:
-                this.pixelName.string = "O";
-        }
+        Player.Instance.SetPlace(this.row, this.col)
     }
 
     start() {

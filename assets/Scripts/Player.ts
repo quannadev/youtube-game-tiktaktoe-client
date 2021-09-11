@@ -19,7 +19,7 @@ export enum WsTags {
     JoinRoom,
     ExitRoom,
     StartGame,
-    SetBlock,
+    SetPlace,
     Turn,
     GameInfo,
 }
@@ -108,6 +108,9 @@ export default class Player extends cc.Component {
             case WsTags.GameInfo:
                 this.matchHandler?.onGameStart(message.Data)
                 break
+            case WsTags.SetPlace:
+                this.matchHandler?.SetPlace(message.Data)
+                break
         }
     }
 
@@ -160,6 +163,18 @@ export default class Player extends cc.Component {
         const loginMessage: WsMessage = {
             Tags: WsTags.Login,
             Data: loginData
+        }
+        this.sendMessage(loginMessage);
+    }
+    SetPlace(row: number, col: number){
+        const placeData = {
+            "Row": row,
+            "Col": col,
+            "PixelType": this.pixelType
+        }
+        const loginMessage: WsMessage = {
+            Tags: WsTags.SetPlace,
+            Data: placeData
         }
         this.sendMessage(loginMessage);
     }

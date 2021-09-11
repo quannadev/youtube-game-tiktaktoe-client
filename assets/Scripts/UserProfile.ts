@@ -25,6 +25,8 @@ export default class UserProfile extends cc.Component {
     @property(cc.Label)
     timerTxt: cc.Label = null
     private timerCount: number = 0
+    private timerEffect: cc.Tween = null
+    private timerSetText: number = 0
 
     onLoad() {
         this.node.setPosition(0, 0);
@@ -46,20 +48,13 @@ export default class UserProfile extends cc.Component {
     }
 
     private TimerCounter() {
-        // const timerSprite = this.timerNode.getComponent(cc.Sprite);
-        // timerSprite.fillRange -= this.timerCount / 100
-        // if (timerSprite.fillRange == -1) {
-        //     timerSprite.fillRange = 0;
-        //     this.unschedule(this.TimerCounter)
-        //     return
-        // }
         let counter = this.timerCount - 1;
         this.timerTxt.node.active = true;
         this.timerTxt.string = `${counter}`;
-        const timer = setInterval(() => {
+        this.timerSetText = setInterval(() => {
             this.timerTxt.string = `${counter}`;
             if (counter <= 0) {
-                clearInterval(timer)
+                clearInterval(this.timerSetText)
                 this.timerTxt.node.active = false;
                 return
             }
@@ -74,11 +69,18 @@ export default class UserProfile extends cc.Component {
         // this.schedule(this.TimerCounter, 0.1)
         const timerSprite = this.timerNode.getComponent(cc.Sprite);
         timerSprite.fillRange = 1;
-        cc.tween(timerSprite).to(time, {fillRange: 0}).delay(1).start()
+        this.timerEffect = cc.tween(timerSprite).to(time, {fillRange: 0}).delay(1);
+        this.timerEffect.start();
 
     }
 
     StopTimer() {
+        const timerSprite = this.timerNode.getComponent(cc.Sprite);
+        timerSprite.fillRange = 0;
+        cc.Tween.stopAllByTarget(timerSprite)
+        this.timerEffect.stop()
+        this.timerTxt.node.active = false
+        clearInterval(this.timerSetText)
         this.unschedule(this.TimerCounter)
     }
 
