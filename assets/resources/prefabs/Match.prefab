@@ -2651,6 +2651,9 @@
     "boardGrid": {
       "__id__": 29
     },
+    "boardNode": {
+      "__id__": 28
+    },
     "pixelNode": {
       "__uuid__": "243dfe20-994d-40db-addf-83ccaaac377f"
     },
@@ -2671,6 +2674,9 @@
     },
     "boardOverLay": {
       "__id__": 38
+    },
+    "btnStartGame": {
+      "__id__": 65
     },
     "_id": ""
   },

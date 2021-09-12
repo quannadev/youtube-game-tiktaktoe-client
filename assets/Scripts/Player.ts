@@ -22,6 +22,7 @@ export enum WsTags {
     SetPlace,
     Turn,
     GameInfo,
+    GameOver
 }
 
 export interface WsMessage {
@@ -110,6 +111,9 @@ export default class Player extends cc.Component {
                 break
             case WsTags.SetPlace:
                 this.matchHandler?.SetPlace(message.Data)
+                break
+            case WsTags.GameOver:
+                this.matchHandler?.GameOver(message.Data)
                 break
         }
     }

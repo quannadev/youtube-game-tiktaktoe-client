@@ -1,8 +1,9 @@
 import Pixel, {PixelType} from "./Pixel";
 import UserProfile, {IUser} from "../UserProfile";
 import Player from "../Player";
-import {GameInfoData, ITurn, MatchStatus} from "./GameInfoData";
+import {GameInfoData, GameOverData, ITurn, MatchStatus} from "./GameInfoData";
 import {PlaceData} from "./RoomType";
+import GameOverPopup, {IGameOver} from "./GameOverPopup";
 
 const {ccclass, property} = cc._decorator;
 
@@ -11,6 +12,8 @@ export default class Match extends cc.Component {
 
     @property(cc.Node)
     boardGrid: cc.Node = null;
+    @property(cc.Node)
+    boardNode: cc.Node = null;
     @property(cc.Prefab)
     pixelNode: cc.Prefab = null
     @property(cc.Prefab)
@@ -25,6 +28,8 @@ export default class Match extends cc.Component {
     turnId: cc.Label = null
     @property(cc.Node)
     boardOverLay: cc.Node = null
+    @property(cc.Button)
+    btnStartGame: cc.Button = null;
 
     private boardSize = cc.v2(10, 10);
     private matchId: string = ""
@@ -32,7 +37,6 @@ export default class Match extends cc.Component {
     private targetInfo: IUser = null;
     private matchStatus: MatchStatus = MatchStatus.Init
     private timeCount: number = 0;
-    private board: PixelType[][] = []
 
     onLoad() {
         this.initBoard()
@@ -44,7 +48,6 @@ export default class Match extends cc.Component {
 
     private initBoard() {
         this.boardGrid.removeAllChildren();
-        this.board = Array.of();
         for (let row = 0; row < this.boardSize.x; row++) {
             const colBoard = Array.of<PixelType>();
             for (let col = 0; col < this.boardSize.y; col++) {
@@ -53,7 +56,6 @@ export default class Match extends cc.Component {
                 this.boardGrid.addChild(pixel);
                 colBoard.push(PixelType.None)
             }
-            this.board.push(colBoard)
         }
     }
 
@@ -86,6 +88,13 @@ export default class Match extends cc.Component {
     onUserExitMatch() {
         Player.Instance.ExitMatch();
     }
+    private resetMatch(){
+        this.initBoard();
+        const popupGameOver = this.boardNode.getChildByName('GameOver');
+        if (popupGameOver){
+            this.boardNode.removeChild(popupGameOver);
+        }
+    }
 
     onUserStartGame() {
         if (Player.Instance.userInfo.Id != this.OwnerId) {
@@ -96,9 +105,14 @@ export default class Match extends cc.Component {
     }
 
     onGameStart(data: GameInfoData) {
+        if (this.matchStatus == MatchStatus.GameOver){
+            this.resetMatch()
+        }
         this.matchStatus = data.MatchStatus
         this.timeCount = data.TimeCount
         this.boardOverLay.active = false;
+        this.btnStartGame.node.active = false;
+
     }
 
     onTurn(data: ITurn) {
@@ -123,5 +137,33 @@ export default class Match extends cc.Component {
                 break
             }
         }
+    }
+
+    GameOver(data: GameOverData) {
+        const myProfile = this.meNode.children[0];
+        const targetProfile = this.targetNode.children[0];
+        targetProfile.getComponent(UserProfile).StopTimer()
+        myProfile.getComponent(UserProfile).StopTimer()
+        let Winner = Player.Instance.userInfo;
+        this.matchStatus = MatchStatus.GameOver;
+        if (data.WinnerId != Winner.Id) {
+            Winner = this.targetInfo;
+        }
+        this.btnStartGame.node.active = true;
+        this.btnStartGame.node.getChildByName('Background')
+            .getChildByName('Label')
+            .getComponent(cc.Label).string = 'Reset Game'
+        cc.resources.load<cc.Prefab>('prefabs/GameOver', (error, asset) => {
+            if (error) {
+                return
+            }
+            const popup = cc.instantiate(asset);
+            const gameOverData: IGameOver = {
+                user: Winner,
+                Point: data.Point
+            }
+            popup.getComponent(GameOverPopup).setData(gameOverData)
+            this.boardNode.addChild(popup, 99, 'GameOver');
+        })
     }
 }

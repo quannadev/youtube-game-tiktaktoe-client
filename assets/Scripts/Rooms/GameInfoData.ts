@@ -13,3 +13,7 @@ export interface ITurn {
     Turn: number;
     TimerCount: number
 }
+export interface GameOverData {
+    WinnerId: string;
+    Point: number;
+}
