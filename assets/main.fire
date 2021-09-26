@@ -133,7 +133,7 @@
       "__id__": 2
     },
     "_enabled": true,
-    "wsServer": "ws://localhost:8080",
+    "wsServer": "ws://128.199.92.52:8080",
     "layoutContent": {
       "__id__": 4
     },

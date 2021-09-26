@@ -674,7 +674,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Turn",
+    "_name": "GameTurn",
     "_objFlags": 0,
     "_parent": {
       "__id__": 15
@@ -699,7 +699,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 81.77,
+      "width": 95.87,
       "height": 31.5
     },
     "_anchorPoint": {
@@ -711,7 +711,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -199.115,
+        -192.065,
         0,
         0,
         0,
@@ -751,8 +751,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "Lượt: 1",
-    "_N$string": "Lượt: 1",
+    "_string": "Game: 1",
+    "_N$string": "Game: 1",
     "_fontSize": 25,
     "_lineHeight": 25,
     "_enableWrapText": true,
@@ -777,18 +777,18 @@
     "asset": {
       "__uuid__": "2666214a-f985-42b2-a4ae-d9d4aa7a69b3"
     },
-    "fileId": "01ZGFMfshANJ4WmB0I2gOL",
+    "fileId": "cb644OAJ1GgJsWb1X0wcVS",
     "sync": false
   },
   {
     "__type__": "cc.Node",
-    "_name": "Timer",
+    "_name": "Turn",
     "_objFlags": 0,
     "_parent": {
       "__id__": 15
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 20
@@ -807,7 +807,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 133.13,
+      "width": 81.77,
       "height": 31.5
     },
     "_anchorPoint": {
@@ -819,7 +819,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -71.66500000000002,
+        -83.245,
         0,
         0,
         0,
@@ -859,8 +859,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "Thời gian: 1",
-    "_N$string": "Thời gian: 1",
+    "_string": "Lượt: 1",
+    "_N$string": "Lượt: 1",
     "_fontSize": 25,
     "_lineHeight": 25,
     "_enableWrapText": true,
@@ -885,7 +885,7 @@
     "asset": {
       "__uuid__": "2666214a-f985-42b2-a4ae-d9d4aa7a69b3"
     },
-    "fileId": "cb644OAJ1GgJsWb1X0wcVS",
+    "fileId": "01ZGFMfshANJ4WmB0I2gOL",
     "sync": false
   },
   {
@@ -927,7 +927,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -88.18500000000002,
+        27.684999999999995,
         0,
         0,
         0,
@@ -2670,6 +2670,9 @@
       "__id__": 23
     },
     "turnId": {
+      "__id__": 20
+    },
+    "GameTurn": {
       "__id__": 17
     },
     "boardOverLay": {

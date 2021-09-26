@@ -11,7 +11,8 @@ export interface ITurn {
     Id: string;
     PlayerId: string;
     Turn: number;
-    TimerCount: number
+    Game: number,
+    TimerCount: number,
 }
 export interface GameOverData {
     WinnerId: string;

@@ -26,6 +26,8 @@ export default class Match extends cc.Component {
     roomId: cc.Label = null
     @property(cc.Label)
     turnId: cc.Label = null
+    @property(cc.Label)
+    GameTurn: cc.Label = null
     @property(cc.Node)
     boardOverLay: cc.Node = null
     @property(cc.Button)
@@ -63,9 +65,11 @@ export default class Match extends cc.Component {
         const profile = cc.instantiate(this.userProfileNode);
         profile.getComponent(UserProfile).SetData(userInfo, false);
         profile.setContentSize(120, 120)
+        this.btnStartGame.node.active = true;
         const isMe = userInfo.Id == Player.Instance.userInfo.Id;
         if (isMe) {
             Player.Instance.pixelType = userInfo.PixelType;
+            this.btnStartGame.node.active = this.OwnerId == Player.Instance.userInfo.Id;
             this.meNode.removeAllChildren();
             this.meNode.addChild(profile);
             return
@@ -116,7 +120,8 @@ export default class Match extends cc.Component {
     }
 
     onTurn(data: ITurn) {
-        this.turnId.string = `Lượt: ${data.Turn}`;
+        this.turnId.string = `Turn: ${data.Turn}`;
+        this.GameTurn.string = `Game: ${data.Game}`;
         const myProfile = this.meNode.children[0];
         const targetProfile = this.targetNode.children[0];
         if (data.PlayerId == Player.Instance.userInfo.Id) {
@@ -146,13 +151,17 @@ export default class Match extends cc.Component {
         myProfile.getComponent(UserProfile).StopTimer()
         let Winner = Player.Instance.userInfo;
         this.matchStatus = MatchStatus.GameOver;
-        if (data.WinnerId != Winner.Id) {
-            Winner = this.targetInfo;
-        }
         this.btnStartGame.node.active = true;
         this.btnStartGame.node.getChildByName('Background')
             .getChildByName('Label')
             .getComponent(cc.Label).string = 'Reset Game'
+
+        if (data.WinnerId != Winner.Id) {
+            Winner = this.targetInfo;
+        }
+        if (data.WinnerId == ''){
+            Winner = null
+        }
         cc.resources.load<cc.Prefab>('prefabs/GameOver', (error, asset) => {
             if (error) {
                 return

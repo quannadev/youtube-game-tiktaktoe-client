@@ -22,11 +22,16 @@ export default class GameOverPopup extends cc.Component {
     // onLoad () {}
 
     setData(data: IGameOver) {
-        this.PName.string = data.user.DisplayName
-        this.Point.string = `Point: ${data.Point}`
-        const avatarNode = cc.instantiate(this.avatar);
-        avatarNode.getComponent(UserProfile).SetData(data.user, false);
-        this.profileNode.addChild(avatarNode)
+        if (data.user){
+            this.PName.string = data.user.DisplayName
+            this.Point.string = `Point: ${data.Point}`
+            const avatarNode = cc.instantiate(this.avatar);
+            avatarNode.getComponent(UserProfile).SetData(data.user, false);
+            this.profileNode.addChild(avatarNode)
+        }else {
+            this.PName.string = 'Game Hoà'
+        }
+
     }
 
     start() {

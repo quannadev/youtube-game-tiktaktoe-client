@@ -38,6 +38,9 @@ export default class Pixel extends cc.Component {
         this.row = row;
         this.col = col;
         this.pixelType = pixel
+        cc.tween(this.node)
+            .blink(0.5, 2)
+            .start();
         if (pixel != PixelType.None){
             switch (pixel) {
                 case PixelType.X:
